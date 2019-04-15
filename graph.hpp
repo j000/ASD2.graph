@@ -11,67 +11,15 @@
 template <typename V, typename E>
 class Graph {
 public:
-	class VerticesIterator {
-	private:
-		VerticesIterator(
-			Graph<V, E>& graph,
-			std::size_t current_vertex_id = 0u);
+	class VerticesIterator;
 
-	public:
-		// ...
-
-		friend class Graph<V, E>;
-
-	private:
-		// ...
-
-	public:
-		bool operator==(const VerticesIterator& vi) const;
-		bool operator!=(const VerticesIterator& vi) const
-		{
-			return !(*this == vi);
-		}
-		VerticesIterator& operator++();
-		VerticesIterator operator++(int);
-		V& operator*() const;
-		V* operator->() const;
-	};
-
-	class EdgesIterator {
-	private:
-		EdgesIterator(
-			Graph<V, E>& graph,
-			std::size_t nm_row,
-			std::size_t nm_col);
-
-	public:
-		// ...
-
-		friend class Graph<V, E>;
-
-	private:
-		// ...
-
-	public:
-		bool operator==(const EdgesIterator& ei) const;
-		bool operator!=(const EdgesIterator& ei) const
-		{
-			return !(*this == ei);
-		}
-		EdgesIterator& operator++();
-		EdgesIterator operator++(int);
-		E& operator*() const;
-		E* operator->() const;
-	};
+	class EdgesIterator;
 
 public:
 	Graph();
+
 	// ...
 
-private:
-	// ...
-
-public:
 	VerticesIterator insertVertex(const V& vertex_data);
 	std::pair<EdgesIterator, bool> insertEdge(
 		std::size_t vertex1_id,
@@ -98,5 +46,44 @@ public:
 	VerticesIterator endVertices();
 	EdgesIterator beginEdges();
 	EdgesIterator endEdges();
+
+private:
 };
 
+template <typename V, typename E>
+class Graph<V, E>::VerticesIterator {
+	friend class Graph<V, E>;
+
+public:
+	bool operator==(const VerticesIterator& vi) const;
+	bool operator!=(const VerticesIterator& vi) const
+	{
+		return !(*this == vi);
+	}
+	VerticesIterator& operator++();
+	VerticesIterator operator++(int);
+	V& operator*() const;
+	V* operator->() const;
+
+private:
+	VerticesIterator(Graph<V, E>& graph, std::size_t current_vertex_id = 0u);
+};
+
+template <typename V, typename E>
+class Graph<V, E>::EdgesIterator {
+	friend class Graph<V, E>;
+
+public:
+	bool operator==(const EdgesIterator& ei) const;
+	bool operator!=(const EdgesIterator& ei) const
+	{
+		return !(*this == ei);
+	}
+	EdgesIterator& operator++();
+	EdgesIterator operator++(int);
+	E& operator*() const;
+	E* operator->() const;
+
+private:
+	EdgesIterator(Graph<V, E>& graph, std::size_t nm_row, std::size_t nm_col);
+};

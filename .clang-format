@@ -6,39 +6,42 @@ IndentWidth: 4
 ContinuationIndentWidth: 4
 TabWidth: 4
 UseTab: Always
-KeepEmptyLinesAtTheStartOfBlocks: false
-MaxEmptyLinesToKeep: 1
+AccessModifierOffset: -4
+AlignAfterOpenBracket: AlwaysBreak
+AlignAfterOpenBracket: AlwaysBreak
+# AlignAfterOpenBracket: DontAlign
+AlignEscapedNewlines: Left
+AlignOperands: false
+AlignTrailingComments: false
+# AllowAllArgumentsOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowAllParametersOfDeclarationOnNextLine: false
+AllowShortFunctionsOnASingleLine: None
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
-# BreakBeforeBraces: Attach
-BreakBeforeBraces: WebKit
-AllowShortFunctionsOnASingleLine: None
-# SortIncludes: false
-AlignTrailingComments: false
-# AlignAfterOpenBracket: AlwaysBreak
-AlignAfterOpenBracket: DontAlign
-AlignOperands: false
-# PenaltyBreakBeforeFirstCallParameter: 0
-ObjCBlockIndentWidth: 4
-IndentCaseLabels: false
-SpaceAfterTemplateKeyword: true
-PenaltyReturnTypeOnItsOwnLine: 60
-# BreakConstructorInitializers: AfterColon
-BreakConstructorInitializers: BeforeComma
-BreakBeforeBinaryOperators: All
-BreakBeforeInheritanceComma: false
-BreakInheritanceList: BeforeComma
-ConstructorInitializerAllOnOneLineOrOnePerLine: true
-Cpp11BracedListStyle: true
-SpaceBeforeCpp11BracedList: false
-AccessModifierOffset: -4
-ConstructorInitializerIndentWidth: 4
 AlwaysBreakTemplateDeclarations: true
-AlignEscapedNewlines: Left
 BinPackArguments: false
 BinPackParameters: false
-AllowAllParametersOfDeclarationOnNextLine: false
-AlignAfterOpenBracket: AlwaysBreak
+BreakBeforeBinaryOperators: All
+# BreakBeforeBraces: Attach
+BreakBeforeBraces: WebKit
+BreakBeforeInheritanceComma: false
+# BreakConstructorInitializers: AfterColon
+BreakConstructorInitializers: BeforeComma
+BreakInheritanceList: BeforeComma
+ConstructorInitializerAllOnOneLineOrOnePerLine: true
+ConstructorInitializerIndentWidth: 4
+Cpp11BracedListStyle: true
+IncludeBlocks: Regroup
+IndentCaseLabels: false
+KeepEmptyLinesAtTheStartOfBlocks: false
+MaxEmptyLinesToKeep: 1
+ObjCBlockIndentWidth: 4
+# PenaltyBreakBeforeFirstCallParameter: 0
+PenaltyReturnTypeOnItsOwnLine: 60
+# SortIncludes: false
+SpaceAfterTemplateKeyword: true
+SpaceBeforeCpp11BracedList: false
 ---
 Language: Java
 ReflowComments: false

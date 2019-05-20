@@ -133,19 +133,17 @@ public:
 	}
 
 private:
-	BFSIterator(const Graph& graph, std::size_t node = 0)
+	BFSIterator(const Graph& graph, std::size_t node)
 		: m_graph{graph}, m_current{node}
 	{
-		if (node < m_graph.nrOfVertices()) {
-			m_visited.resize(graph.nrOfVertices());
-			m_queue.push(node);
-			++*this;
-		}
+		m_visited.resize(graph.nrOfVertices());
+		m_queue.push(node);
+		++*this;
 	}
 
-	static BFSIterator end(const Graph& graph)
+	BFSIterator(const Graph& graph)
+		: m_graph{graph}, m_current{graph.nrOfVertices()}
 	{
-		return BFSIterator(graph, graph.nrOfVertices());
 	}
 
 	const Graph& m_graph;
@@ -212,19 +210,17 @@ public:
 	}
 
 private:
-	DFSIterator(const Graph& graph, std::size_t node = 0)
+	DFSIterator(const Graph& graph, std::size_t node)
 		: m_graph{graph}, m_current{node}
 	{
-		if (node < m_graph.nrOfVertices()) {
-			m_visited.resize(graph.nrOfVertices());
-			m_stack.push(node);
-			++*this;
-		}
+		m_visited.resize(graph.nrOfVertices());
+		m_stack.push(node);
+		++*this;
 	}
 
-	static DFSIterator end(const Graph& graph)
+	DFSIterator(const Graph& graph)
+		: m_graph{graph}, m_current{graph.nrOfVertices()}
 	{
-		return DFSIterator(graph, graph.nrOfVertices());
 	}
 
 	const Graph& m_graph;
@@ -452,7 +448,7 @@ typename Graph<V, E>::BFSIterator Graph<V, E>::beginBFS(std::size_t node) const
 template <typename V, typename E>
 typename Graph<V, E>::BFSIterator Graph<V, E>::endBFS() const
 {
-	return BFSIterator::end(*this);
+	return BFSIterator{*this};
 }
 
 template <typename V, typename E>
@@ -464,7 +460,7 @@ typename Graph<V, E>::DFSIterator Graph<V, E>::beginDFS(std::size_t node) const
 template <typename V, typename E>
 typename Graph<V, E>::DFSIterator Graph<V, E>::endDFS() const
 {
-	return DFSIterator::end(*this);
+	return DFSIterator{*this};
 }
 
 #endif /* GRAPH_HPP */

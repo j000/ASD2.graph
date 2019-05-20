@@ -22,6 +22,7 @@ class Graph {
 public:
 	class VerticesIterator;
 	class EdgesIterator;
+	class BFSIterator;
 
 public:
 	Graph() = default;
@@ -56,6 +57,9 @@ public:
 	void bfs(std::size_t) const;
 	void dfs(std::size_t) const;
 
+	BFSIterator beginBFS(std::size_t = 0) const;
+	BFSIterator endBFS() const;
+
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
 };
@@ -66,6 +70,83 @@ private:
 
 #include "EdgesIterator.hpp"
 #include "VerticesIterator.hpp"
+
+template <typename V, typename E>
+class Graph<V, E>::BFSIterator {
+	friend class Graph<V, E>;
+
+public:
+	BFSIterator(const BFSIterator&) = default;
+	BFSIterator(BFSIterator&&) = default;
+	BFSIterator& operator=(const BFSIterator&) = default;
+	BFSIterator& operator=(BFSIterator&&) = default;
+
+	bool operator==(const BFSIterator& rhs) const
+	{
+		return m_current == rhs.m_current;
+	}
+	bool operator!=(const BFSIterator& rhs) const
+	{
+		return !(*this == rhs);
+	}
+
+	BFSIterator& operator++()
+	{
+		std::size_t tmp;
+		do {
+			if (m_queue.empty()) {
+				m_current = m_graph.nrOfVertices();
+				return *this;
+			}
+			tmp = m_queue.front();
+			m_queue.pop();
+		} while (m_visited[tmp]);
+		m_visited[tmp] = true;
+		for (std::size_t i = 0; i < m_graph.m_data[tmp].second.size(); ++i) {
+			if (m_graph.edgeExist(tmp, i)) {
+				m_queue.push(i);
+			}
+		}
+		m_current = tmp;
+		return *this;
+	}
+	BFSIterator operator++(int)
+	{
+		auto tmp = *this;
+		this->operator++();
+		return tmp;
+	}
+
+	const V& operator*() const
+	{
+		return m_graph.m_data[m_current].first;
+	}
+	const V* operator->() const
+	{
+		return m_graph.m_data[m_current].first;
+	}
+
+private:
+	BFSIterator(const Graph& graph, std::size_t node = 0)
+		: m_graph{graph}, m_current{node}
+	{
+		if (node < m_graph.nrOfVertices()) {
+			m_visited.resize(graph.nrOfVertices());
+			m_queue.push(node);
+			++*this;
+		}
+	}
+
+	static BFSIterator end(const Graph& graph)
+	{
+		return BFSIterator(graph, graph.nrOfVertices());
+	}
+
+	const Graph& m_graph;
+	std::size_t m_current{0};
+	std::queue<std::size_t> m_queue{};
+	std::vector<bool> m_visited{};
+};
 
 ////////////////////////////////////////
 // Graph implementation
@@ -275,6 +356,18 @@ void Graph<V, E>::dfs(std::size_t start) const
 		std::cout << m_data[tmp].first << ", ";
 	}
 	std::cout << std::endl;
+}
+
+template <typename V, typename E>
+typename Graph<V, E>::BFSIterator Graph<V, E>::beginBFS(std::size_t node) const
+{
+	return BFSIterator{*this, node};
+}
+
+template <typename V, typename E>
+typename Graph<V, E>::BFSIterator Graph<V, E>::endBFS() const
+{
+	return BFSIterator::end(*this);
 }
 
 #endif /* GRAPH_HPP */

@@ -7,6 +7,7 @@
 #include <iostream>
 #include <limits>
 #include <optional>
+#include <queue>
 #include <stack>
 #include <vector>
 
@@ -52,6 +53,9 @@ public:
 
 	void printNeighborhoodMatrix() const;
 
+	void bfs(std::size_t) const;
+	void dfs(std::size_t) const;
+
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
 };
@@ -60,8 +64,8 @@ private:
 // Iterators
 ////////////////////////////////////////
 
-#include "VerticesIterator.hpp"
 #include "EdgesIterator.hpp"
+#include "VerticesIterator.hpp"
 
 ////////////////////////////////////////
 // Graph implementation
@@ -188,9 +192,9 @@ std::pair<typename Graph<V, E>::EdgesIterator, bool> Graph<V, E>::insertEdge(
 	bool replace)
 {
 	if (edgeExist(vertex1_id, vertex2_id) && !replace)
-		return std::make_pair(EdgesIterator(*this, 0, 0), false);
+		return std::make_pair(EdgesIterator{*this, 0, 0}, false);
 	m_data[vertex1_id].second[vertex2_id] = label;
-	return std::make_pair(EdgesIterator(*this, vertex1_id, vertex2_id), true);
+	return std::make_pair(EdgesIterator{*this, vertex1_id, vertex2_id}, true);
 }
 
 template <typename V, typename E>
@@ -227,6 +231,50 @@ void Graph<V, E>::printNeighborhoodMatrix() const
 		}
 		std::cout << std::endl;
 	}
+}
+
+template <typename V, typename E>
+void Graph<V, E>::bfs(std::size_t start) const
+{
+	std::vector<bool> visited(m_data.size());
+	std::queue<std::size_t> queue{};
+	queue.push(start);
+	while (!queue.empty()) {
+		auto tmp = queue.front();
+		queue.pop();
+		if (visited[tmp])
+			continue;
+		visited[tmp] = true;
+		for (std::size_t i = 0; i < m_data[tmp].second.size(); ++i) {
+			if (edgeExist(tmp, i)) {
+				queue.push(i);
+			}
+		}
+		std::cout << m_data[tmp].first << ", ";
+	}
+	std::cout << std::endl;
+}
+
+template <typename V, typename E>
+void Graph<V, E>::dfs(std::size_t start) const
+{
+	std::vector<bool> visited(m_data.size());
+	std::stack<std::size_t> stack{};
+	stack.push(start);
+	while (!stack.empty()) {
+		auto tmp = stack.top();
+		stack.pop();
+		if (visited[tmp])
+			continue;
+		visited[tmp] = true;
+		for (std::size_t i = m_data[tmp].second.size(); i > 0; --i) {
+			if (edgeExist(tmp, i - 1)) {
+				stack.push(i - 1);
+			}
+		}
+		std::cout << m_data[tmp].first << ", ";
+	}
+	std::cout << std::endl;
 }
 
 #endif /* GRAPH_HPP */

@@ -59,6 +59,10 @@ int main(int, char**) {
 	for (int i = 0; i < g.nrOfVertices(); ++i) {
 		std::cout << "dfs starting from " << i << std::endl;
 		g.dfs(i);
+		for (auto j = g.beginDFS(i); j != g.endDFS(); ++j) {
+			std::cout << *j << ", ";
+		}
+		std::cout << std::endl;
 	}
 
 	std::cout << std::endl;

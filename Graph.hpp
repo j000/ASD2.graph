@@ -6,6 +6,7 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
+#include <map>
 #include <optional>
 #include <queue>
 #include <stack>
@@ -63,6 +64,11 @@ public:
 
 	DFSIterator beginDFS(std::size_t = 0) const;
 	DFSIterator endDFS() const;
+
+	std::tuple<double, std::vector<V>> dijkstra(
+		const std::size_t start,
+		const std::size_t end,
+		const std::function<double(const E&)> f);
 
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
@@ -461,6 +467,75 @@ template <typename V, typename E>
 typename Graph<V, E>::DFSIterator Graph<V, E>::endDFS() const
 {
 	return DFSIterator{*this};
+}
+
+template <typename V, typename E>
+std::tuple<double, std::vector<V>> Graph<V, E>::dijkstra(
+	const std::size_t start,
+	const std::size_t end,
+	const std::function<double(const E&)> f)
+{
+	const auto comp
+		= [](const auto& lhs, const auto& rhs) { return lhs.cost > rhs.cost; };
+	struct node_elem {
+		node_elem() = default;
+		node_elem(std::size_t n, double x, std::size_t y)
+			: node{n}, cost{x}, previous{y}
+		{
+		}
+		node_elem(const node_elem&) = default;
+		node_elem(node_elem&&) = default;
+		node_elem& operator=(const node_elem&) = default;
+		node_elem& operator=(node_elem&&) = default;
+
+		std::size_t node{0};
+		double cost{0};
+		std::size_t previous{0};
+	};
+	const auto number_of_vertices = nrOfVertices();
+
+	std::vector<node_elem> frontier{
+		{start, 0, end}}; // end is a magic number here
+	std::map<std::size_t, std::size_t> previous;
+
+	while (!frontier.empty()) {
+		auto current = frontier.back();
+		frontier.pop_back();
+
+		if (current.node == end) {
+			// retrun solution
+			std::vector<V> out{m_data[end].first};
+			auto tmp = current.previous;
+			do {
+				out.push_back(m_data[tmp].first);
+				tmp = previous[tmp];
+			} while (tmp != end); // end is a magic number here
+			std::reverse(out.begin(), out.end());
+			return std::make_tuple(current.cost, out);
+		}
+
+		// mark as visited
+		previous[current.node] = current.previous;
+		// loop through all neighbors
+		for (std::size_t i = 0; i < number_of_vertices; ++i) {
+			// if edge does not exist
+			if (!edgeExist(current.node, i))
+				continue;
+			// if visited
+			if (previous.count(i))
+				continue;
+
+			const auto& edge = m_data[current.node].second[i];
+			const double cost = f(edge.value());
+			node_elem new_value{i, current.cost + cost, current.node};
+			// insert into sorted vector
+			frontier.insert(
+				std::lower_bound(
+					frontier.begin(), frontier.end(), new_value, comp),
+				new_value);
+		}
+	}
+	throw std::runtime_error{"No valid path"};
 }
 
 #endif /* GRAPH_HPP */

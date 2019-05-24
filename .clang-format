@@ -15,7 +15,6 @@ AlignOperands: false
 AlignTrailingComments: false
 # AllowAllArgumentsOnNextLine: false
 AllowAllParametersOfDeclarationOnNextLine: false
-AllowAllParametersOfDeclarationOnNextLine: false
 AllowShortFunctionsOnASingleLine: None
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakAfterReturnType: None
@@ -25,8 +24,7 @@ BinPackParameters: false
 BreakBeforeBinaryOperators: All
 # BreakBeforeBraces: Attach
 BreakBeforeBraces: WebKit
-BreakBeforeInheritanceComma: false
-# BreakConstructorInitializers: AfterColon
+BreakBeforeInheritanceComma: true
 BreakConstructorInitializers: BeforeComma
 BreakInheritanceList: BeforeComma
 ConstructorInitializerAllOnOneLineOrOnePerLine: true

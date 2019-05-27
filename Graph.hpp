@@ -6,10 +6,10 @@
 #include <iomanip>
 #include <iostream>
 #include <limits>
-#include <map>
 #include <optional>
 #include <queue>
 #include <stack>
+#include <unordered_map>
 #include <vector>
 
 #define USE_FASTER_REMOVAL 0
@@ -65,10 +65,10 @@ public:
 	DFSIterator beginDFS(std::size_t = 0) const;
 	DFSIterator endDFS() const;
 
-	std::tuple<double, std::vector<V>> dijkstra(
+	std::tuple<float, std::vector<V>> dijkstra(
 		const std::size_t start,
 		const std::size_t end,
-		const std::function<double(const E&)> f);
+		const std::function<float(const E&)> f);
 
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
@@ -470,37 +470,28 @@ typename Graph<V, E>::DFSIterator Graph<V, E>::endDFS() const
 }
 
 template <typename V, typename E>
-std::tuple<double, std::vector<V>> Graph<V, E>::dijkstra(
+std::tuple<float, std::vector<V>> Graph<V, E>::dijkstra(
 	const std::size_t start,
 	const std::size_t end,
-	const std::function<double(const E&)> f)
+	const std::function<float(const E&)> f)
 {
 	const auto comp
 		= [](const auto& lhs, const auto& rhs) { return lhs.cost > rhs.cost; };
 	struct node_elem {
-		node_elem() = default;
-		node_elem(std::size_t n, double x, std::size_t y)
-			: node{n}, cost{x}, previous{y}
-		{
-		}
-		node_elem(const node_elem&) = default;
-		node_elem(node_elem&&) = default;
-		node_elem& operator=(const node_elem&) = default;
-		node_elem& operator=(node_elem&&) = default;
-
 		std::size_t node{0};
-		double cost{0};
+		float cost{0};
 		std::size_t previous{0};
 	};
 	const auto number_of_vertices = nrOfVertices();
 
-	std::vector<node_elem> frontier{
-		{start, 0, end}}; // end is a magic number here
-	std::map<std::size_t, std::size_t> previous;
+	std::priority_queue<node_elem, std::vector<node_elem>, decltype(comp)>
+		frontier(comp);
+	frontier.push({start, 0, end}); // end is a magic number here
+	std::unordered_map<std::size_t, std::size_t> previous;
 
 	while (!frontier.empty()) {
-		auto current = frontier.back();
-		frontier.pop_back();
+		auto current = frontier.top();
+		frontier.pop();
 
 		if (current.node == end) {
 			// retrun solution
@@ -526,13 +517,9 @@ std::tuple<double, std::vector<V>> Graph<V, E>::dijkstra(
 				continue;
 
 			const auto& edge = m_data[current.node].second[i];
-			const double cost = f(edge.value());
+			const float cost = f(edge.value());
 			node_elem new_value{i, current.cost + cost, current.node};
-			// insert into sorted vector
-			frontier.insert(
-				std::lower_bound(
-					frontier.begin(), frontier.end(), new_value, comp),
-				new_value);
+			frontier.push(new_value);
 		}
 	}
 	throw std::runtime_error{"No valid path"};

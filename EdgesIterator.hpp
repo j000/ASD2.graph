@@ -1,3 +1,6 @@
+#ifndef GRAPH_HPP
+#error Include Graph.hpp!
+#endif
 #ifndef EDGESITERATOR_HPP
 #define EDGESITERATOR_HPP
 
@@ -15,8 +18,10 @@ public:
 
 	bool operator==(const EdgesIterator& ei) const;
 	bool operator!=(const EdgesIterator& ei) const;
+
 	EdgesIterator& operator++();
 	EdgesIterator operator++(int);
+
 	const E& operator*() const;
 	const E* operator->() const;
 

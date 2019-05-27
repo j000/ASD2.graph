@@ -1,3 +1,6 @@
+#ifndef GRAPH_HPP
+#error Include Graph.hpp!
+#endif
 #ifndef VERTICESITERATOR_HPP
 #define VERTICESITERATOR_HPP
 
@@ -25,7 +28,6 @@ public:
 private:
 	VerticesIterator(const Graph& graph, std::size_t current_vertex_id = 0u);
 
-	const Graph& m_graph;
 	typename decltype(std::declval<Graph>().m_data)::const_iterator m_iterator;
 };
 
@@ -80,7 +82,7 @@ template <typename V, typename E>
 Graph<V, E>::VerticesIterator::VerticesIterator(
 	const Graph& graph,
 	std::size_t current_vertex_id)
-	: m_graph{graph}, m_iterator{m_graph.m_data.begin() + current_vertex_id}
+	: m_iterator{graph.m_data.begin() + current_vertex_id}
 {
 }
 

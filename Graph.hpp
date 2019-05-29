@@ -65,10 +65,10 @@ public:
 	DFSIterator beginDFS(std::size_t = 0) const;
 	DFSIterator endDFS() const;
 
-	std::tuple<float, std::vector<V>> dijkstra(
+	std::tuple<double, std::vector<std::size_t>> dijkstra(
 		const std::size_t start,
 		const std::size_t end,
-		const std::function<float(const E&)> f);
+		const std::function<double(const E&)> f) const;
 
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
@@ -470,16 +470,16 @@ typename Graph<V, E>::DFSIterator Graph<V, E>::endDFS() const
 }
 
 template <typename V, typename E>
-std::tuple<float, std::vector<V>> Graph<V, E>::dijkstra(
+std::tuple<double, std::vector<std::size_t>> Graph<V, E>::dijkstra(
 	const std::size_t start,
 	const std::size_t end,
-	const std::function<float(const E&)> f)
+	const std::function<double(const E&)> f) const
 {
 	const auto comp
 		= [](const auto& lhs, const auto& rhs) { return lhs.cost > rhs.cost; };
 	struct node_elem {
 		std::size_t node{0};
-		float cost{0};
+		double cost{0};
 		std::size_t previous{0};
 	};
 	const auto number_of_vertices = nrOfVertices();
@@ -492,18 +492,22 @@ std::tuple<float, std::vector<V>> Graph<V, E>::dijkstra(
 	while (!frontier.empty()) {
 		auto current = frontier.top();
 		frontier.pop();
+		// std::cout << " *** visiting " << current.node << " from " <<
+		// current.previous << std::endl;
 
 		if (current.node == end) {
 			// retrun solution
-			std::vector<V> out{m_data[end].first};
+			std::vector<std::size_t> out{end};
 			auto tmp = current.previous;
 			do {
-				out.push_back(m_data[tmp].first);
+				out.push_back(tmp);
 				tmp = previous[tmp];
 			} while (tmp != end); // end is a magic number here
 			std::reverse(out.begin(), out.end());
 			return std::make_tuple(current.cost, out);
 		}
+		if (previous.count(current.node))
+			continue;
 
 		// mark as visited
 		previous[current.node] = current.previous;
@@ -517,7 +521,7 @@ std::tuple<float, std::vector<V>> Graph<V, E>::dijkstra(
 				continue;
 
 			const auto& edge = m_data[current.node].second[i];
-			const float cost = f(edge.value());
+			const double cost = f(edge.value());
 			node_elem new_value{i, current.cost + cost, current.node};
 			frontier.push(new_value);
 		}

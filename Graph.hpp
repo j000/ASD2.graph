@@ -69,6 +69,13 @@ public:
 		const std::size_t start,
 		const std::size_t end,
 		const std::function<double(const E&)> f) const;
+	std::tuple<double, std::vector<std::size_t>> a_star(
+		const std::size_t start,
+		const std::size_t end,
+		const std::function<double(const E&)> f,
+		const std::function<
+			double(const Graph<V, E>&, const std::size_t, const std::size_t)> h)
+		const;
 
 private:
 	std::vector<std::pair<V, std::vector<std::optional<E>>>> m_data{};
@@ -523,6 +530,82 @@ std::tuple<double, std::vector<std::size_t>> Graph<V, E>::dijkstra(
 			const auto& edge = m_data[current.node].second[i];
 			const double cost = f(edge.value());
 			node_elem new_value{i, current.cost + cost, current.node};
+			frontier.push(new_value);
+		}
+	}
+	throw std::runtime_error{"No valid path"};
+}
+
+template <typename V, typename E>
+std::tuple<double, std::vector<std::size_t>> Graph<V, E>::a_star(
+	const std::size_t start,
+	const std::size_t end,
+	const std::function<double(const E&)> f,
+	const std::function<
+		double(const Graph<V, E>&, const std::size_t, const std::size_t)> h)
+	const
+{
+	const auto comp = [](const auto& lhs, const auto& rhs) {
+		return lhs.expected_cost > rhs.expected_cost;
+	};
+	struct node_elem {
+		std::size_t node{0};
+		double cost{0};
+		double expected_cost{0};
+		std::size_t previous{0};
+	};
+	const auto number_of_vertices = nrOfVertices();
+
+	std::priority_queue<node_elem, std::vector<node_elem>, decltype(comp)>
+		frontier(comp);
+	frontier.push({start, 0, 0, end}); // end is a magic number here
+	std::unordered_map<std::size_t, std::size_t> previous;
+
+	while (!frontier.empty()) {
+		auto current = frontier.top();
+		frontier.pop();
+		std::cout << " *** visiting " << current.node << " from "
+				  << current.previous << " with cost " << current.cost
+				  << std::endl;
+
+		if (current.node == end) {
+			// retrun solution
+#if 0
+			for (const auto& i : previous) {
+				std::cout << i.first << " <= " << i.second << std::endl;
+			}
+			std::cout << std::endl;
+#endif
+			std::vector<std::size_t> out{end};
+			auto tmp = current.previous;
+			do {
+				out.push_back(tmp);
+				tmp = previous[tmp];
+			} while (tmp != end); // end is a magic number here
+			std::reverse(out.begin(), out.end());
+			return std::make_tuple(current.cost, out);
+		}
+		if (previous.find(current.node) != previous.end())
+			continue;
+
+		// mark as visited
+		previous[current.node] = current.previous;
+		// loop through all neighbors
+		for (std::size_t i = 0; i < number_of_vertices; ++i) {
+			// if edge does not exist
+			if (!edgeExist(current.node, i))
+				continue;
+			// if visited
+			// if (previous.count(i))
+			if (previous.find(i) != previous.end())
+				continue;
+
+			const auto& edge = m_data[current.node].second[i];
+			const double cost = f(edge.value());
+			node_elem new_value{i,
+								current.cost + cost,
+								current.cost + cost + h(*this, i, end),
+								current.node};
 			frontier.push(new_value);
 		}
 	}

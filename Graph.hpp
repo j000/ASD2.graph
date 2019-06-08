@@ -3,6 +3,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <functional>
 #include <iomanip>
 #include <iostream>
 #include <limits>
@@ -32,6 +33,8 @@ public:
 	Graph(Graph&&) = default;
 	Graph& operator=(const Graph&) = default;
 	Graph& operator=(Graph&&) = default;
+
+	V vertexData(std::size_t vertex_id) const;
 
 	std::size_t nrOfVertices() const;
 	VerticesIterator begin() const;
@@ -245,6 +248,12 @@ private:
 ////////////////////////////////////////
 // Graph implementation
 ////////////////////////////////////////
+
+template <typename V, typename E>
+V Graph<V, E>::vertexData(std::size_t vertex_id) const
+{
+	return m_data[vertex_id].first;
+}
 
 template <typename V, typename E>
 std::size_t Graph<V, E>::nrOfVertices() const
